@@ -39,7 +39,7 @@ Este taller está diseñado para aplicar y profundizar en los conceptos avanzado
 
 #### Ejercicio 1: El quiz del Scope.
 
-  - Considera el siguiente condigo:
+  - Considera el siguiente codigo:
 
     ```javascript
     // Global Scope
