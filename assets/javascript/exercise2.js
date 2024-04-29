@@ -1,6 +1,6 @@
 // Añadir elemntos, caracteristicas o estilos por medio del DOM me generan MacroTareas
 
-const myText = document.getElementById('showCode');
+const myText = document.getElementById("showCode");
 
 myText.innerHTML = `// vars call<br>
 console.log("Valor de a:", a);<br>
@@ -24,10 +24,10 @@ function funcionDeclarada() {<br>
   &emsp;return "Función expresada ha sido llamada.";<br>
 };`;
 
-myText.style.height = '1000px';
-myText.style.display = 'flex';
-myText.style.alignItems = 'center';
-myText.style.marginLeft = '100px';
+myText.style.height = "1000px";
+myText.style.display = "flex";
+myText.style.alignItems = "center";
+myText.style.marginLeft = "100px";
 
 // Variables
 
@@ -38,20 +38,21 @@ let whyUser;
 
 function askYorN(question) {
   while (true) {
-    anwer = prompt(`Indica por que crees esto por favor`).trim();
+    anwer = prompt(question).trim().toLowerCase();
 
-    if (anwer) {
+    if (anwer == "y" || anwer == "n") {
       break;
     }
-    alert('indica algo por favor');
+    alert("Indica una opcion valida por favor");
   }
 
   return anwer;
 }
 
 setTimeout(() => {
-  prompt('hola');
-  prompt('hola');
-  prompt('hola');
-  prompt('hola');
-}, 1000);
+  const question1 = askYorN(
+    "Teniendo de encuenta el codigo enseñado, segun el Hoisting en Javascript, Crees que la ejecucion para el primer console log console.log('Valor de a:', a); sera Exitoso\nY: si\nN: no"
+  );
+  alert();
+  // prompt();
+}, 100);
