@@ -1,14 +1,14 @@
 //Ejercicio 6: Event Loop y Web APIs
 
-console.log("Mensaje 1: Inmediatamente");
+console.log('Mensaje 1: Inmediatamente');
 
 setTimeout(() => {
-    console.log("Mensaje 2: Con timeout de 0 segundos")},0);
+  console.log('Mensaje 2: Con timeout de 0 segundos');
+}, 0);
 
 setTimeout(() => {
-    console.log("Mensaje 3: Con timeout de 0 segundos")},1000);
-
-
+  console.log('Mensaje 3: Con timeout de 0 segundos');
+}, 1000);
 
 /*
 ¿Por qué "Mensaje 2: Con timeout de 0 segundos" no se muestra inmediatamente 

@@ -1,19 +1,20 @@
 //Ejercicio 5: Promesas y Callbacks en Acción
 
-const myPromise = new Promise((resolve, reject) =>{
-    // setTimeout(() => resolve("¡Promesa cumplida y callback ejecutado!"),2000)
-    setTimeout(() => reject("Error promesa rechazada...callback ejecutado!"),2000)
-})
+const myPromise = new Promise((resolve, reject) => {
+  // setTimeout(() => resolve("¡Promesa cumplida y callback ejecutado!"),2000)
+  setTimeout(
+    () => reject('Error promesa rechazada...callback ejecutado!'),
+    2000
+  );
+});
 
-function manejarAsincronia(promise, callback){
-    promise
-   .then(result => callback(result))
-   .catch(error => callback(error))
+function manejarAsincronia(promise, callback) {
+  promise.then((result) => callback(result)).catch((error) => callback(error));
 }
 
-manejarAsincronia(myPromise, function (result){
-    console.log(result);
-})
+manejarAsincronia(myPromise, function (result) {
+  console.log(result);
+});
 
 /*
 ¿Cómo se comporta la función si la promesa es rechazada en lugar de resuelta?
