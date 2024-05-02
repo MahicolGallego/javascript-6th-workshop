@@ -30,16 +30,32 @@ function idAutomaticGenerator(intervalIncrease = 1) {
 function verifyAvailability(requiredCapacity, roomList, roomsTypes) {
   alert("Verifiquemos la disponibilidad habitaciones");
 
-  const roomsAvailable = roomList.filter(
-    (room) =>
-      roomsTypes
-        .filter((types) => types.capacity >= requiredCapacity)
-        .map((selected) => selected.id)
-        .includes(room.roomTypeId) && room.availability
-  );
-
-  return roomsAvailable
-
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const roomsAvailable = roomList.filter(
+        (room) =>
+          roomsTypes
+            .filter((types) => types.capacity >= requiredCapacity)
+            .map((selected) => selected.id)
+            .includes(room.roomTypeId) && room.availability
+      );
+      if (!roomsAvailable.length) {
+        reject(
+          "No hay disponibilidad de habitaciones con esas caracteristicas"
+        );
+      }
+      console.log("Habitaciones disponibles: ", roomsAvailable);
+      resolve(roomsAvailable);
+    }, 3000);
+  });
+  // .then((listRoomsAvailables) => {
+  //   console.log("Habitaciones disponibles: ", listRoomsAvailables);
+  //   resolve(roomsAvailable);
+  // })
+  // .catch((err) => {
+  //   console.error(err);
+  //   reject(err);
+  // });
 
   /*Por si no hay una propiedad availability(disponibilidad)
   let roomsAvailable = roomList.filter(
@@ -135,98 +151,37 @@ runProgram
             break;
           }
 
-          const availableRooms = verifyAvailability(
+          const roomsAvailables = verifyAvailability(
             userRequiredCapacity,
             rooms,
             roomTypes,
             reservations
           );
 
-          if (!availableRooms.length) {
-            alert("No hay disponibilidad de habitaciones con esas caracteristicas")
-            break
-          }
-
-          const numberRequiredRoom = Number(
-            prompt(
-              availableRooms
-                .map((room) => {
-                  return `Numero de habitacion: ${room.number
-                    }\nTipo de habitacion: ${roomTypes.filter(
-                      (roomType) => roomType.id === room.roomTypeId
-                    )[0].name
-                    }\nCapacidad Maxima: ${roomTypes.find(
-                      (roomType) => roomType.id === room.roomTypeId
-                    ).capacity
-                    }`;
-                })
-                .join("\n\n") +
-              "\n\nIngrese el numero de habitacion que desea reservar: "
-            )
-          );
-
-          if (!availableRooms.map(element => element.number).includes(numberRequiredRoom)) {
-            if (numberRequiredRoom === 0) {
-              alert("No se indico dato para la solicitud")
-              break
-            }
-            alert("la habitacion solicitadas no existe o no se encuentra entre las habitaciones disponibles")
-            break
-          }
-
-          let startDate;
-
-          do {
-            startDate = prompt(
-              "Por favor ingresa la fecha inicio de la reserva (MM/DD/YYYY): "
-            );
-          } while (
-            !startDate ||
-            startDate.split("/").length !== 3 ||
-            !/^[0-9/]{10}$/.test(startDate) ||
-            startDate.split("/")[0].length !== 2 ||
-            startDate.split("/")[1].length !== 2 ||
-            startDate.split("/")[2].length !== 4
-          );
-
-          let endDate;
-
-          do {
-            endDate = prompt(
-              "Por favor ingresa la fecha final de la reserva (MM/DD/YYYY): "
-            );
-          } while (
-            !endDate ||
-            endDate.split("/").length !== 3 ||
-            !/^[0-9/]{10}$/.test(endDate) ||
-            endDate.split("/")[0].length !== 2 ||
-            endDate.split("/")[1].length !== 2 ||
-            endDate.split("/")[2].length !== 4
-          );
-
-          let fullName;
-
-          while (true) {
-            fullName = prompt("Ingresa el nombre y apellido a nombre de quien se creara la reserva por favor")
-              .toLowerCase()
-              .trim();
-
-            // console.log(numRegExp.test(fullName));
-
-            if (
-              fullName.split(" ").length === 2 &&
-              fullName.split(" ")[1].length &&
-              !/[0-9]/.test(fullName)
-            ) {
-              break;
-            }
-
-            alert(
-              "El nombre y el apellido deben separarse por espacio y sin numeros por favor"
-            );
-          }
-
-
+          roomsAvailables
+            .then(availableRooms => {
+              const userAction = Number(
+                prompt(
+                  availableRooms
+                    .map((room) => {
+                      return `Numero de habitacion: ${room.number
+                        }\nTipo de habitacion: ${roomTypes.filter(
+                          (roomType) => roomType.id === room.roomTypeId
+                        )[0].name
+                        }\nCapacidad Maxima: ${roomTypes.find(
+                          (roomType) => roomType.id === room.roomTypeId
+                        ).capacity
+                        }`;
+                    })
+                    .join("\n\n") +
+                  "\n\nIngrese el numero de habitacion que desea reservar: "
+                )
+              );
+            })
+            .catch((err) => {
+              console.error(err);
+              alert(err);
+            });
 
           // const userAction = Number(
           //   prompt(
