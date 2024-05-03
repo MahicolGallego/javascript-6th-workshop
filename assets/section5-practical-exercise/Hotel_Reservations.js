@@ -1,14 +1,14 @@
 // Aplicando Todos los Conceptos - Proyecto de Sistema de Reservas de Hotel
 
-const url = '/assets/data-json/data.json';
+const url = "/assets/data-json/data.json";
 
 const reservations = [
   {
     reservationId: 1,
     numberRoom: 104,
-    startDate: '2024-04-01',
-    endDate: '2024-04-07',
-    nameClient: 'Mahicol Gallego',
+    startDate: "2024-04-01",
+    endDate: "2024-04-07",
+    nameClient: "mahicol gallego",
     quantityGuests: 3,
   },
 ];
@@ -28,7 +28,7 @@ function idAutomaticGenerator(intervalIncrease = 1) {
 
 //verificar disponibilidad
 function verifyAvailability(requiredCapacity, roomList, roomsTypes) {
-  alert('Verifiquemos la disponibilidad habitaciones');
+  alert("Verifiquemos la disponibilidad habitaciones");
   const roomsAvailable = roomList.filter(
     (room) =>
       roomsTypes
@@ -84,32 +84,63 @@ function registerReservation(
 
   requiredRoom.availability = false;
 
-  alert('Reservacion registrada con exito');
+  alert("Reservacion registrada con exito");
 }
 
-function showReservations(fullNameClient, listReservations, listRoomTypes) {
+function showReservations(
+  fullNameClient,
+  listReservations,
+  listRoomTypes,
+  listRooms
+) {
   const clientReservations = listReservations.filter(
-    (element) => element.toName === fullNameClient
+    (element) => element.nameClient === fullNameClient
   );
-  const message = clientReservations.map((element) => {
-    return `\n${element.reservationId}. Numero de habitacion: ${
-      element.numberRoom
-    }\nTipo de habitacion: ${listRoomTypes.find(
-      (element) => element.numberRoom === reservations
-    )}\nFecha inicial de la reservacion: ${
-      element.startDate
-    }\nFecha final de la reservacion: ${
-      element.endDate
-    }\nCliente que reserva: ${element.nameClient}\nCantidad de huespedes: ${
-      element.quantityGuests
-    }\n`;
+
+  let message = "";
+
+  clientReservations.forEach((element) => {
+    //Buscando/extrayendo el tipo de habitacion
+    const roomFind = listRooms.filter(
+      (rooms) => rooms.number === element.numberRoom
+    );
+
+    const roomTypeFindDescription = listRoomTypes.find(
+      (element) => element.id === roomFind[0].roomTypeId
+    ).description;
+
+    message += `\n${element.reservationId}. Numero de habitacion: ${element.numberRoom}\nTipo de habitacion: ${roomTypeFindDescription}\nFecha inicial de la reservacion: ${element.startDate}\nFecha final de la reservacion: ${element.endDate}\nCliente que reserva: ${element.nameClient}\nCantidad de huespedes: ${element.quantityGuests}\n`;
   });
+
+  console.log(message);
+
+  return message;
 }
 
-//Variables
+function cancelReservation(listReservations, listRooms, idReservationToCancel) {
+  const cancelConfirm = "¿Seguro que deseas cancelar la reservacion?";
 
-//General el contador
-const myIdGenerator = idAutomaticGenerator();
+  if (!cancelConfirm) {
+    alert("Sin modificaciones para las reservas");
+    return;
+  }
+
+  listReservations.splice(idReservationToCancel, 1);
+
+  //poner de nuevo disponible la Room
+
+  const reservationCanceled = listReservations.find(
+    (element) => element.reservationId === idReservationToCancel
+  );
+
+  const roomOfReservationCanceled = listRooms.find(
+    (room) => room.number === reservationCanceled.numberRoom
+  );
+
+  roomOfReservationCanceled.availability = true;
+
+  return alert("Reserva cancelada exitosamente");
+}
 
 // Función para cargar y mostrar el contenido de data.json
 function loadAndShowData() {
@@ -121,7 +152,7 @@ function loadAndShowData() {
         .then((response) => {
           console.log(response);
           if (!response.ok) {
-            throw new Error('Error: Algo ha ido mal al cargar los datos');
+            throw new Error("Error: Algo ha ido mal al cargar los datos");
             // Si la respuesta no es correcta, rechazamos la promesa
           }
           //si es correcta se retorna la data parseada en formato .json
@@ -129,8 +160,8 @@ function loadAndShowData() {
         })
         .then((data) => {
           //mostramos la data en consola
-          console.log('Habitaciones:', data.rooms);
-          console.log('Tipos de habitaciones', data.roomTypes);
+          console.log("Habitaciones:", data.rooms);
+          console.log("Tipos de habitaciones", data.roomTypes);
           //Resolver la promesa con los datos cargados
           resolve(data);
         })
@@ -143,6 +174,11 @@ function loadAndShowData() {
   });
 }
 
+//Variables
+
+//General el contador
+const myIdGenerator = idAutomaticGenerator();
+
 // Llamar a la función para cargar y mostrar el contenido de data.json
 const runProgram = loadAndShowData();
 
@@ -152,46 +188,45 @@ runProgram
       let selectOpt;
       while (true) {
         selectOpt = prompt(
-          'Bienvenido al Hotel Kali\n\n' +
-            'Seleccione una opcion:\n\n' +
-            '1. Reservar habitacion\n' +
-            '2. Ver reservas actuales\n' +
-            '3. Editar reserva\n' +
-            '4. Cancelar reserva\n' +
-            '5. Salir'
+          "Bienvenido al Hotel Kali\n\n" +
+            "Seleccione una opcion:\n\n" +
+            "1. Reservar habitacion\n" +
+            "2. Ver reservas actuales\n" +
+            "3. Editar reserva\n" +
+            "4. Cancelar reserva\n" +
+            "5. Salir"
         );
-        if (['1', '2', '3', '4', '5'].includes(selectOpt)) {
+        if (["1", "2", "3", "4", "5"].includes(selectOpt)) {
           break;
         }
-        alert('Indica una opcion valida');
+        alert("Indica una opcion valida");
       }
       switch (selectOpt) {
-        case '1': //Aplicamos destructuracion a los datos y mostramos su contenido
+        case "1": //Aplicamos destructuracion a los datos y mostramos su contenido
           //despues de cargarlos
 
           const userRequiredCapacity = Number(
             prompt(
-              'Capacidad minima de huespedes que debe tener la habitacion'
+              "Capacidad minima de huespedes que debe tener la habitacion"
             ).trim()
           );
 
           if (isNaN(userRequiredCapacity) || userRequiredCapacity === 0) {
-            alert('Error: Capacidad indicada invalida');
+            alert("Error: Capacidad indicada invalida");
             break;
           }
 
           const availableRooms = verifyAvailability(
             userRequiredCapacity,
             rooms,
-            roomTypes,
-            reservations
+            roomTypes
           );
 
           // console.log(availableRooms);
 
           if (!availableRooms.length) {
             alert(
-              'No hay disponibilidad de habitaciones con esas caracteristicas'
+              "No hay disponibilidad de habitaciones con esas caracteristicas"
             );
             break;
           }
@@ -212,8 +247,8 @@ runProgram
                     ).capacity
                   }`;
                 })
-                .join('\n\n') +
-                '\n\nIngrese el numero de la habitacion que desea reservar: '
+                .join("\n\n") +
+                "\n\nIngrese el numero de la habitacion que desea reservar: "
             )
           );
 
@@ -223,11 +258,11 @@ runProgram
               .includes(numberRequiredRoom)
           ) {
             if (numberRequiredRoom === 0) {
-              alert('No se indico dato para la solicitud');
+              alert("No se indico dato para la solicitud");
               break;
             }
             alert(
-              'la habitacion solicitadas no existe o no se encuentra entre las habitaciones disponibles'
+              "la habitacion solicitadas no existe o no se encuentra entre las habitaciones disponibles"
             );
             break;
           }
@@ -243,51 +278,51 @@ runProgram
 
           do {
             startDate = prompt(
-              'Por favor ingresa la fecha inicio de la reserva (MM/DD/YYYY): '
+              "Por favor ingresa la fecha inicio de la reserva (MM/DD/YYYY): "
             );
           } while (
             !startDate ||
-            startDate.split('/').length !== 3 ||
+            startDate.split("/").length !== 3 ||
             !/^[0-9/]{10}$/.test(startDate) ||
-            startDate.split('/')[0].length !== 2 ||
-            startDate.split('/')[1].length !== 2 ||
-            startDate.split('/')[2].length !== 4
+            startDate.split("/")[0].length !== 2 ||
+            startDate.split("/")[1].length !== 2 ||
+            startDate.split("/")[2].length !== 4
           );
 
           let endDate;
 
           do {
             endDate = prompt(
-              'Por favor ingresa la fecha final de la reserva (MM/DD/YYYY): '
+              "Por favor ingresa la fecha final de la reserva (MM/DD/YYYY): "
             );
           } while (
             !endDate ||
-            endDate.split('/').length !== 3 ||
+            endDate.split("/").length !== 3 ||
             !/^[0-9/]{10}$/.test(endDate) ||
-            endDate.split('/')[0].length !== 2 ||
-            endDate.split('/')[1].length !== 2 ||
-            endDate.split('/')[2].length !== 4
+            endDate.split("/")[0].length !== 2 ||
+            endDate.split("/")[1].length !== 2 ||
+            endDate.split("/")[2].length !== 4
           );
 
           let fullNameClient;
 
           while (true) {
             fullNameClient = prompt(
-              'Ingresa el nombre y apellido a nombre de quien se creara la reserva por favor'
+              "Ingresa el nombre y apellido a nombre de quien se creara la reserva por favor"
             )
               .toLowerCase()
               .trim();
 
             if (
-              fullNameClient.split(' ').length === 2 &&
-              fullNameClient.split(' ')[1].length &&
+              fullNameClient.split(" ").length === 2 &&
+              fullNameClient.split(" ")[1].length &&
               !/[0-9]/.test(fullNameClient)
             ) {
               break;
             }
 
             alert(
-              'El nombre y el apellido deben separarse por espacio y sin numeros por favor'
+              "El nombre y el apellido deben separarse por espacio y sin numeros por favor"
             );
           }
 
@@ -295,13 +330,13 @@ runProgram
           while (true) {
             quantityGuests = Number(
               prompt(
-                'Indica el numero de las personas que se hospedaran en la habitacion'
+                "Indica el numero de las personas que se hospedaran en la habitacion"
               ).trim()
             );
             if (quantityGuests) {
               break;
             }
-            alert('No se ha indicado ningun dato o ningun dato valido');
+            alert("No se ha indicado ningun dato o ningun dato valido");
           }
 
           if (
@@ -311,7 +346,7 @@ runProgram
               .includes(roomToReservation.roomTypeId)
           ) {
             alert(
-              'El cuarto seleccionado no tiene esa capacidad de huespedes\nIntenta probar con otra seleccion'
+              "El cuarto seleccionado no tiene esa capacidad de huespedes\nIntenta probar con otra seleccion"
             );
             break;
           }
@@ -327,20 +362,102 @@ runProgram
           console.log(rooms, reservations);
 
           break;
-        case '2':
-          let showReservations =
-            `Lista de reservaciones\n` +
-            reservations.map((element) => {
-              return `\n${element.reservationId}. Numero de habitacion: ${element.numberRoom}\nFecha inicial de la reservacion: ${element.startDate}\nFecha final de la reservacion: ${element.endDate}\nCliente que reserva: ${element.nameClient}\nCantidad de huespedes: ${element.quantityGuests}\n`;
-            });
-          alert(showReservations);
-          // { reservationId, numberRoom, startDate, endDate, nameClient, quantityGuests }
+        case "2":
+          let fullNameToSearch;
+          while (true) {
+            fullNameToSearch = prompt(
+              "Ingresa el nombre y apellido de a nombre de a quien se encuentran registradas las reservas que quieres consultar"
+            )
+              .toLowerCase()
+              .trim();
+
+            if (
+              fullNameToSearch.split(" ").length === 2 &&
+              fullNameToSearch.split(" ")[1].length &&
+              !/[0-9]/.test(fullNameToSearch)
+            ) {
+              break;
+            }
+
+            alert(
+              "El nombre y el apellido deben separarse por espacio y sin numeros por favor"
+            );
+          }
+          let userReservations = showReservations(
+            fullNameToSearch,
+            reservations,
+            roomTypes,
+            rooms
+          );
+
+          if (!userReservations) {
+            alert("No hay reservas registradas para ese cliente");
+            break;
+          }
+
+          alert(
+            "Lista de reservas: " + fullNameToSearch + "\n" + userReservations
+          );
           break;
-        case '3':
+        case "3":
           break;
-        case '4':
+        case "4":
+          while (true) {
+            fullNameToSearch = prompt(
+              "Ingresa el nombre y apellido de a nombre de a quien se encuentran registradas las reservas que deseas cancelar"
+            )
+              .toLowerCase()
+              .trim();
+
+            if (
+              fullNameToSearch.split(" ").length === 2 &&
+              fullNameToSearch.split(" ")[1].length &&
+              !/[0-9]/.test(fullNameToSearch)
+            ) {
+              break;
+            }
+
+            alert(
+              "El nombre y el apellido deben separarse por espacio y sin numeros por favor"
+            );
+          }
+
+          userReservations = showReservations(
+            fullNameToSearch,
+            reservations,
+            roomTypes,
+            rooms
+          );
+
+          if (!userReservations) {
+            alert("No hay reservas registradas para ese cliente");
+            break;
+          }
+
+          const IdToCancelReservation = Number(
+            prompt(
+              userReservations +
+                "\n\nIndica el numero en la id de reserva de la reserva que deseas cancelar: "
+            ).trim()
+          );
+
+          if (
+            !reservations.filter(
+              (reservation) =>
+                reservation.id === IdToCancelReservation &&
+                reservation.nameClient === fullNameToSearch
+            )[0]
+          ) {
+            alert(
+              "La reservacion que intenta cancelar no existe en el registro"
+            );
+            break;
+          }
+
+          cancelReservation(reservations, rooms, IdToCancelReservation);
+
           break;
-        case '5':
+        case "5":
           break mainProgram;
         default:
           break;
@@ -348,5 +465,5 @@ runProgram
     }
   })
   .catch((err) => {
-    console.error('Error en la obtencion de los datos: ', err);
+    console.error("Error en la obtencion de los datos: ", err);
   });
