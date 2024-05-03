@@ -112,26 +112,53 @@ function showReservations(
     message += `\n${element.reservationId}. Numero de habitacion: ${element.numberRoom}\nTipo de habitacion: ${roomTypeFindDescription}\nFecha inicial de la reservacion: ${element.startDate}\nFecha final de la reservacion: ${element.endDate}\nCliente que reserva: ${element.nameClient}\nCantidad de huespedes: ${element.quantityGuests}\n`;
   });
 
-  console.log(message);
+  // console.log(message);
 
   return message;
 }
 
+//editar reservacion
+function editReservation(listReservations, idReservationToEdit, newStartDate, newEndDate) {
+
+  const ReservationToEdit = listReservations.find(element => element.reservationId === idReservationToEdit)
+
+  if(newStartDate){
+    ReservationToEdit.startDate = new Date(newStartDate)
+  }
+
+  if(newEndDate){
+    ReservationToEdit.endDate = new Date(newEndDate)
+  }  
+
+  console.log(listReservations)
+
+  return alert("Reserva modificada exitosamente");
+
+}
+
+
+//Cancelar reservacion
 function cancelReservation(listReservations, listRooms, idReservationToCancel) {
-  const cancelConfirm = "¿Seguro que deseas cancelar la reservacion?";
+  const cancelConfirm = confirm("¿Seguro que deseas cancelar la reservacion?");
 
   if (!cancelConfirm) {
     alert("Sin modificaciones para las reservas");
     return;
   }
 
-  listReservations.splice(idReservationToCancel, 1);
-
-  //poner de nuevo disponible la Room
+  //Contenemos la reserva para luego poner de nuevo disponible la Room
 
   const reservationCanceled = listReservations.find(
     (element) => element.reservationId === idReservationToCancel
   );
+
+  //Eliminar la reservacion
+
+  listReservations.splice(idReservationToCancel - 1, 1);
+
+  // console.log(listReservations)
+
+  // Poner de nuevo disponible la Room
 
   const roomOfReservationCanceled = listRooms.find(
     (room) => room.number === reservationCanceled.numberRoom
@@ -272,7 +299,7 @@ runProgram
             (element) => element.number === numberRequiredRoom
           );
 
-          console.log(roomToReservation);
+          // console.log(roomToReservation);
 
           let startDate;
 
@@ -400,19 +427,18 @@ runProgram
           );
           break;
         case "3":
-          break;
-        case "4":
+          let fullNameToSearchEdit;
           while (true) {
-            fullNameToSearch = prompt(
-              "Ingresa el nombre y apellido de a nombre de a quien se encuentran registradas las reservas que deseas cancelar"
+            fullNameToSearchEdit = prompt(
+              "Ingresa el nombre y apellido de a nombre de a quien se encuentran registradas las reservas que deseas modificar"
             )
               .toLowerCase()
               .trim();
 
             if (
-              fullNameToSearch.split(" ").length === 2 &&
-              fullNameToSearch.split(" ")[1].length &&
-              !/[0-9]/.test(fullNameToSearch)
+              fullNameToSearchEdit.split(" ").length === 2 &&
+              fullNameToSearchEdit.split(" ")[1].length &&
+              !/'[0-9]'/  .test(fullNameToSearchEdit)
             ) {
               break;
             }
@@ -422,31 +448,111 @@ runProgram
             );
           }
 
-          userReservations = showReservations(
-            fullNameToSearch,
+          let userReservationsEdit = showReservations(
+            fullNameToSearchEdit,
             reservations,
             roomTypes,
             rooms
           );
 
-          if (!userReservations) {
+          if (!userReservationsEdit) {
+            alert("No hay reservas registradas para ese cliente");
+            break;
+          }
+
+          const IdToEditReservation = Number(
+            prompt(
+                `${userReservationsEdit}\n\nIndica el numero en la id de reserva de la reserva que deseas cancelar: `
+            ).trim()
+          );
+
+          if(!reservations.filter(element => element.reservationId === IdToEditReservation && element.nameClient === fullNameToSearchEdit)[0]){
+            alert(
+              "La reservacion que intenta editar no existe en el registro"
+            );
+            break;
+          }
+
+          let startDateToEdit;
+
+          do {
+            startDateToEdit = prompt(
+              "Por favor ingresa la nueva fecha inicio para modificar la reserva (MM/DD/YYYY)\n(Si no desea modificarla presione enter)"
+            );
+          } while (
+            (!startDateToEdit ||
+            startDateToEdit.split("/").length !== 3 ||
+            !/^[0-9/]{10}$/.test(startDateToEdit) ||
+            startDateToEdit.split("/")[0].length !== 2 ||
+            startDateToEdit.split("/")[1].length !== 2 ||
+            startDateToEdit.split("/")[2].length !== 4) && startDateToEdit !== ""
+          );
+
+          let endDateToEdit;
+
+          do {
+            endDateToEdit = prompt(
+              "Por favor ingresa la nueva fecha final para modificar la reserva (MM/DD/YYYY)\n(Si no desea modificarla presione enter)"
+            );
+          } while (
+            (!endDateToEdit ||
+            endDateToEdit.split("/").length !== 3 ||
+            !/^[0-9/]{10}$/.test(endDateToEdit) ||
+            endDateToEdit.split("/")[0].length !== 2 ||
+            endDateToEdit.split("/")[1].length !== 2 ||
+            endDateToEdit.split("/")[2].length !== 4) && endDateToEdit !== ""
+          );
+
+          editReservation(reservations, IdToEditReservation, startDateToEdit, endDateToEdit);
+          
+          break;
+        case "4":
+          let fullNameToSearchCancel;
+          while (true) {
+            fullNameToSearchCancel = prompt(
+              "Ingresa el nombre y apellido de a nombre de a quien se encuentran registradas las reservas que deseas cancelar"
+            )
+              .toLowerCase()
+              .trim();
+
+            if (
+              fullNameToSearchCancel.split(" ").length === 2 &&
+              fullNameToSearchCancel.split(" ")[1].length &&
+              !/'[0-9]'/  .test(fullNameToSearchCancel)
+            ) {
+              break;
+            }
+
+            alert(
+              "El nombre y el apellido deben separarse por espacio y sin numeros por favor"
+            );
+          }
+
+          
+          let userReservationsCancel = showReservations(
+            fullNameToSearchCancel,
+            reservations,
+            roomTypes,
+            rooms
+          );
+
+          if (!userReservationsCancel) {
             alert("No hay reservas registradas para ese cliente");
             break;
           }
 
           const IdToCancelReservation = Number(
             prompt(
-              userReservations +
-                "\n\nIndica el numero en la id de reserva de la reserva que deseas cancelar: "
+                `${userReservationsCancel}\n\nIndica el numero en la id de reserva de la reserva que deseas cancelar: `
             ).trim()
           );
 
           if (
             !reservations.filter(
               (reservation) =>
-                reservation.id === IdToCancelReservation &&
-                reservation.nameClient === fullNameToSearch
-            )[0]
+                reservation.reservationId === IdToCancelReservation &&
+                reservation.nameClient === fullNameToSearchCancel
+            ).length
           ) {
             alert(
               "La reservacion que intenta cancelar no existe en el registro"
