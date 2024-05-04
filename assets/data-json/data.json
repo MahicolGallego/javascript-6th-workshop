@@ -54,7 +54,7 @@
       "number": 104,
       "roomTypeId": 3,
       "priceNight": 150,
-      "availability": false
+      "availability": true
     },
     {
       "number": 105,
